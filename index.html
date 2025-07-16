@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #00CCB3;
+    }
+
+    .card-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      width: 150px;
+      height: 200px;
+      background-color: #D3D3D3;
+      color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1rem;
+      margin: 0 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s;
+	  border: 2px solid black
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+	
+	.controls {
+	  margin-top: 40px; /* Add space between the controls and the card container */
+	}
+	
+	.interval-input {
+	  margin-: 30px; /* Add space above the input element */
+	}
+	
+	.blink {
+      animation: blink-animation 1s infinite;
+	  margin-bottom: 20px;
+    }
+
+    @keyframes blink-animation {
+      50% {
+        opacity: 0;
+	}	
+	
+  </style>
+  <title>Card Shuffle Animation</title>
+</head>
+<body>
+  <h1 class="blink">SHUFFLE YOUR CARDS</h1>	
+  <div class="card-container">
+    <div class="card"><a href="https://www.youtube.com/watch?v=a7cOCs4nfEA" target="_blank">RE-ROLL</a></div>
+    <div class="card"><a href="https://app.Lumi.education/run/ffZZ3O" target="_blank">MEDIUM</a></div>
+    <div class="card"><a href="https://app.Lumi.education/run/FPUXgu" target="_blank">HARD</a></div>
+  </div>
+  <div class="buttons">
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+  </div>
+  <div class="controls">
+	<label for="intervalInput">Shuffling Interval (ms):</label>
+	<input type="number" id="intervalInput" min="100" step="100" value="1000">
+  </div>
+    <script>
+    const cardContainer = document.querySelector('.card-container');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const cards = document.querySelectorAll('.card');
+    const intervalInput = document.getElementById('intervalInput');
+	const cardUrls = [
+		'https://www.youtube.com/watch?v=a7cOCs4nfEA', // Replace with the actual URL for Card 1
+		'https://app.Lumi.education/run/ffZZ3O', // Replace with the actual URL for Card 2
+		'https://app.Lumi.education/run/FPUXgu'  // Replace with the actual URL for Card 3
+];
+	let shuffleInterval;
+
+    function hideCardLabels() {
+  cards.forEach(card => card.textContent = '');
+}
+
+function shuffleCards() {
+  const containerWidth = cardContainer.clientWidth;
+  const cardWidth = cards[0].clientWidth;
+  const maxDeltaX = 50;
+
+  const shuffledCards = Array.from(cards).sort(() => Math.random() - 0.5);
+  const initialPositions = Array.from(cards).map(card => card.getBoundingClientRect());
+
+  shuffledCards.forEach((card, index) => {
+    const initialPosition = initialPositions[index];
+    const currentPosition = card.getBoundingClientRect();
+    let deltaX = initialPosition.left - currentPosition.left;
+
+    deltaX = Math.max(-maxDeltaX, Math.min(maxDeltaX, deltaX));
+
+    card.style.transition = 'none';
+    card.style.transform = `translateX(${deltaX}px)`;
+
+    requestAnimationFrame(() => {
+      card.style.transition = 'transform 0.5s ease-in-out';
+      card.style.transform = 'translateX(0)';
+    });
+  });
+
+  const cardParent = cards[0].parentNode; // Store the parent of the card elements
+  cardParent.innerHTML = ''; // Clear the container
+  shuffledCards.forEach(card => cardContainer.appendChild(card));
+
+  setTimeout(() => {
+    showCardLabels();
+  }, 2000);
+}
+
+    function shuffleCards() {
+      const containerWidth = cardContainer.clientWidth;
+      const cardWidth = cards[0].clientWidth;
+      const maxDeltaX = 50;
+
+      const shuffledCards = Array.from(cards).sort(() => Math.random() - 0.5);
+      const initialPositions = Array.from(cards).map(card => card.getBoundingClientRect());
+
+      shuffledCards.forEach((card, index) => {
+        const initialPosition = initialPositions[index];
+        const currentPosition = card.getBoundingClientRect();
+        let deltaX = initialPosition.left - currentPosition.left;
+
+        deltaX = Math.max(-maxDeltaX, Math.min(maxDeltaX, deltaX));
+
+        card.style.transition = 'none';
+        card.style.transform = `translateX(${deltaX}px)`;
+
+        requestAnimationFrame(() => {
+          card.style.transition = 'transform 0.5s ease-in-out';
+          card.style.transform = 'translateX(0)';
+        });
+      });
+
+      cardContainer.innerHTML = '';
+      shuffledCards.forEach(card => cardContainer.appendChild(card));
+
+      // Show card labels again after shuffle
+      cards.forEach(card => card.style.opacity = 1);
+    }
+
+    function startAnimation() {
+      hideCardLabels();
+	  const intervalValue = parseInt(intervalInput.value);
+      setTimeout(() => {
+        shuffleInterval = setInterval(shuffleCards, intervalValue);
+		}, 2000);
+    }
+
+    function stopAnimation() {
+      clearInterval(shuffleInterval);
+    }
+	
+	function showCardText(index) {
+	  const CardText = [
+        "RE-ROLL",
+        "MEDIUM",
+        "HARD"
+    ]; 
+      cards[index].innerHTML = `<a href="${cardUrls[index]}" target="_blank">${CardText[index]}</a>`;
+    }
+	
+	cards.forEach((card, index) => {
+      card.addEventListener('click', () => {
+        showCardText(index);
+      });
+    });
+
+    startButton.addEventListener('click', startAnimation);
+    stopButton.addEventListener('click', stopAnimation);
+  </script>
+</body>
+</html>
+
